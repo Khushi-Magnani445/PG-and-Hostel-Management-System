@@ -1,0 +1,30 @@
+{% extends 'main_app/base.html' %}
+{% block title %}Occupancy Dashboard | PG Manager{% endblock %}
+{% block content %}
+<h2 class="section-title mb-3">Occupancy Forecast Dashboard</h2>
+<div class="card p-3">
+  <canvas id="occupancyChart" height="140"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const labels = JSON.parse('{{ labels_json|escapejs }}');
+  const values = JSON.parse('{{ values_json|escapejs }}');
+  const ctx = document.getElementById('occupancyChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Beds Booked (Historical + Forecast)',
+        data: values,
+        borderColor: '#6c63ff',
+        backgroundColor: 'transparent',
+        fill: false,
+        tension: 0.25
+      }]
+    },
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+  });
+</script>
+{% endblock %}

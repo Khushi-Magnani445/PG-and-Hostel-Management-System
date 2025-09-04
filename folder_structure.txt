@@ -1,0 +1,36 @@
+Directory structure:
+└── media/
+     └── pg_images/
+          ├── bornrich_pg.avif
+          ├── hetal_pg_image.jpeg
+          └── Pearls_aatithya_PG.avif
+          Directory structure:
+└── ml_models/
+     ├── complaint_model.pkl
+     ├── occupancy_model.pkl
+     └── rent_model.pkl
+     Directory structure:
+└── models/
+     ├── archive.zip
+     └── get_details.py
+     Directory structure:
+└── pg_project/
+     ├── asgi.py
+     ├── settings.py
+     ├── urls.py
+     ├── wsgi.py
+     ├── __init__.py
+     └── __pycache__/
+          ├── settings.cpython-312.pyc
+          ├── urls.cpython-312.pyc
+          ├── wsgi.cpython-312.pyc
+          └── __init__.cpython-312.pyc
+    db.sqlite3  
+    generate_occupancy_csv.py  
+    load_members.py  
+    load_pg_data.py
+    manage.py
+    requirements.txt 
+    train_complaints.py
+    train_occupancy.py
+    train_rent_model.py

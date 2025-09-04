@@ -1,0 +1,94 @@
+{% extends 'main_app/base.html' %}
+{% block title %}Add PG | PG Manager{% endblock %}
+{% block content %}
+<h2 class="section-title mb-3">Add a New PG</h2>
+<div class="card p-3">
+  <form method="post" enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
+    {% csrf_token %}
+    <div class="col-md-6">
+      <label class="form-label">Title</label>
+      <input type="text" name="title" class="form-control" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">City</label>
+      <input type="text" name="city" class="form-control" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Facilities (comma separated)</label>
+      <input type="text" name="facilities" class="form-control" placeholder="wifi, laundry, parking" required>
+    </div>
+    <div class="col-md-3 form-check mt-4 ms-2">
+      <input class="form-check-input" type="checkbox" name="shared" id="sharedCheck" value="1">
+      <label class="form-check-label" for="sharedCheck">Shared</label>
+    </div>
+    <div class="col-md-3 form-check mt-4">
+      <input class="form-check-input" type="checkbox" name="is_available" id="availableCheck" checked>
+      <label class="form-check-label" for="availableCheck">Available</label>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Min Rent (₹)</label>
+      <input type="number" name="min_rent" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Min Room Rent (₹)</label>
+      <input type="number" name="min_room_rent" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Min Room Advance (₹)</label>
+      <input type="number" name="min_room_advance" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Available For</label>
+      <input type="text" name="available_for" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Booking Type</label>
+      <input type="text" name="booking_type" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Furnishing Type</label>
+      <select name="furnishing_type" class="form-select" required>
+        <option value="furnished">Furnished</option>
+        <option value="semi-furnished">Semi-Furnished</option>
+        <option value="unfurnished">Unfurnished</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">House Type</label>
+      <input type="text" name="house_type" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">BHK Type</label>
+      <input type="text" name="bhk_type" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Area (sqft)</label>
+      <input type="number" name="area_sqft" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Rooms Available</label>
+      <input type="number" name="room_available" class="form-control">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Beds Available</label>
+      <input type="number" name="bed_available" class="form-control">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Bathrooms</label>
+      <input type="number" name="bathroom_count" class="form-control">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Established Year</label>
+      <input type="number" name="established_year" class="form-control">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Image File (optional)</label>
+      <input type="file" name="image_file" class="form-control" accept="image/*">
+      <small class="muted">If you upload an image here, it will be used. Otherwise a placeholder will be shown.</small>
+    </div>
+    <div class="col-12 d-grid">
+      <button type="submit" class="btn btn-primary">Save PG</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

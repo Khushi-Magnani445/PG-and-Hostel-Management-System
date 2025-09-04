@@ -1,0 +1,136 @@
+{% extends 'main_app/base.html' %}
+{% block title %}{{ pg.title }} | PG Manager{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="gallery">
+      {% if pg.image_file %}
+        <img src="{{ pg.image_file.url }}" alt="{{ pg.title }}" class="rounded-3">
+      {% elif pg.image_url %}
+        <img src="{{ pg.image_url }}" alt="{{ pg.title }}" class="rounded-3">
+      {% else %}
+        <img src="https://via.placeholder.co/800x500?text=PG" alt="{{ pg.title }}" class="rounded-3">
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card p-3 h-100">
+      <div class="d-flex justify-content-between">
+        <h2 class="mb-1">{{ pg.title }}</h2>
+        <span class="badge">{{ pg.city }}</span>
+      </div>
+      <p class="pg-meta mb-2">{{ pg.address }}</p>
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <span class="price">₹{{ pg.min_rent }}</span>
+        <small class="muted">per month</small>
+      </div>
+      
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} py-2">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        <span class="badge-amenity badge">{{ pg.house_type }}</span>
+        <span class="badge-amenity badge">Beds: {{ pg.bed_available }}</span>
+        <span class="badge-amenity badge">Rooms: {{ pg.room_available }}</span>
+        <span class="badge-amenity badge">Baths: {{ pg.bathroom_count }}</span>
+        <span class="badge-amenity badge">{{ pg.bhk_type }}</span>
+        <span class="badge-amenity badge">{{ pg.furnishing_type }}</span>
+        <span class="badge-amenity badge">Since {{ pg.established_year }}</span>
+      </div>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} py-2">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post" action="{% url 'pg_register_tenant' pk=pg.pk %}" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="pg_id" value="{{ pg.id }}">
+        <div class="mb-3">
+          <label class="form-label">Your Name</label>
+          <input type="text" name="name" class="form-control" required>
+          <div class="invalid-feedback">Please enter your name.</div>
+        </div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-accent">Register</button>
+        </div>
+      </form>
+      <a class="d-inline-block mt-3" href="{% url 'pg_listings' %}">← Back to Listings</a>
+    </div>
+  </div>
+</div>
+
+<hr class="soft my-5" />
+{% if total_reviews > 0 %}
+  <p><strong>Positive Sentiment:</strong> {{ sentiment_percent }}% of {{ total_reviews }} reviews</p>
+{% endif %}
+<div class="card p-3 mb-4">
+  <h5 class="mb-3">Review Sentiment Over Time</h5>
+  <canvas id="sentimentChart" height="120"></canvas>
+  </div>
+
+<h4 class="mb-3">Reviews</h4>
+<div class="row g-3">
+{% for review in reviews %}
+  <div class="col-12">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between">
+        <strong>{{ review.name }}</strong>
+        <span>⭐ {{ review.rating }}/5</span>
+      </div>
+      <small class="muted">{{ review.sentiment|title }}</small>
+      <p class="mb-0 mt-2">{{ review.comment }}</p>
+    </div>
+  </div>
+{% empty %}
+  <div class="col-12"><div class="alert alert-info">No reviews yet.</div></div>
+{% endfor %}
+</div>
+
+<div class="card p-3 mt-4">
+  <h5>Leave a Review</h5>
+  <form method="post" action="{% url 'pg_detail' pg.pk %}" class="row g-2 needs-validation" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="review_submit" value="1">
+    <div class="col-md-4">
+      <label class="form-label">Your Name</label>
+      <input type="text" name="reviewer_name" class="form-control" required>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Rating</label>
+      <select name="rating" class="form-select">
+        {% for i in "12345" %}
+        <option value="{{ i }}">{{ i }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-12">
+      <label class="form-label">Comment</label>
+      <textarea name="comment" class="form-control" rows="3" required></textarea>
+    </div>
+    <div class="col-12 d-grid">
+      <button type="submit" class="btn btn-primary">Submit Review</button>
+    </div>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="application/json" id="labels-data">{{ labels|safe }}</script>
+<script type="application/json" id="positive-data">{{ pos_values|safe }}</script>
+<script type="application/json" id="negative-data">{{ neg_values|safe }}</script>
+<script>
+  const labels = JSON.parse(document.getElementById('labels-data').textContent);
+  const posValues = JSON.parse(document.getElementById('positive-data').textContent);
+  const negValues = JSON.parse(document.getElementById('negative-data').textContent);
+  const ctx = document.getElementById('sentimentChart').getContext('2d');
+  new Chart(ctx, {type:'line', data:{labels, datasets:[
+    {label:'Positive', data:posValues, borderColor:'#00c2a8', backgroundColor:'transparent', fill:false, tension:.3, spanGaps:true},
+    {label:'Negative', data:negValues, borderColor:'#dc3545', backgroundColor:'transparent', fill:false, tension:.3, spanGaps:true}
+  ]}, options:{responsive:true, scales:{y:{beginAtZero:true}}}});
+</script>
+{% endblock %}

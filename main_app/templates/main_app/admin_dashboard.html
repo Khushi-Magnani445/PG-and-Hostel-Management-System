@@ -1,0 +1,97 @@
+{% extends 'main_app/base.html' %}
+{% block title %}Admin Dashboard | PG Manager{% endblock %}
+{% block content %}
+<h2 class="section-title mb-3">Admin Dashboard</h2>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card p-3 stat-card">
+      <div class="icon"><span>🏠</span></div>
+      <div>
+        <div class="small muted">Total PGs</div>
+        <div class="h5 mb-0">{{ stats.total_pgs|default:0 }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3 stat-card">
+      <div class="icon"><span>👥</span></div>
+      <div>
+        <div class="small muted">Active Tenants</div>
+        <div class="h5 mb-0">{{ stats.tenants|default:0 }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3 stat-card">
+      <div class="icon"><span>📅</span></div>
+      <div>
+        <div class="small muted">Bookings (month)</div>
+        <div class="h5 mb-0">{{ stats.bookings_month|default:0 }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3 stat-card">
+      <div class="icon"><span>💸</span></div>
+      <div>
+        <div class="small muted">Revenue (₹)</div>
+        <div class="h5 mb-0">{{ stats.revenue|default:0 }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card p-3">
+      <h5 class="mb-3">Occupancy Trend</h5>
+      <canvas id="adminOcc" height="140"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card p-3">
+      <h5 class="mb-3">Recent Bookings</h5>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>PG</th><th>Tenant</th><th>Date</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for r in recent_bookings %}
+            <tr>
+              <td>{{ r.pg.title }}</td>
+              <td>{{ r.tenant_name }}</td>
+              <td>{{ r.created_at|date:'Y-m-d' }}</td>
+              <td>
+                {% if r.status == 'confirmed' %}
+                  <span class="status-badge status-confirmed">Confirmed</span>
+                {% elif r.status == 'pending' %}
+                  <span class="status-badge status-pending">Pending</span>
+                {% else %}
+                  <span class="status-badge status-cancelled">Cancelled</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4"><div class="alert alert-info mb-0">No recent bookings.</div></td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="application/json" id="admin-labels">{{ admin_chart.labels|default:"[]"|safe }}</script>
+<script type="application/json" id="admin-values">{{ admin_chart.values|default:"[]"|safe }}</script>
+<script>
+  const occCtx = document.getElementById('adminOcc').getContext('2d');
+  const occLabels = JSON.parse(document.getElementById('admin-labels')?.textContent || '[]');
+  const occValues = JSON.parse(document.getElementById('admin-values')?.textContent || '[]');
+  new Chart(occCtx, {
+    type:'line',
+    data:{ labels: occLabels, datasets:[{ label:'Occupancy', data:occValues, borderColor:'#6c63ff', backgroundColor:'transparent', tension:.25 }] },
+    options:{ responsive:true, scales:{ y:{ beginAtZero:true } } }
+  });
+</script>
+{% endblock %}

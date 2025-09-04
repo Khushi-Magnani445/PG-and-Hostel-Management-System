@@ -1,0 +1,64 @@
+{% extends 'main_app/base.html' %}
+{% block title %}Recommendations | PG Manager{% endblock %}
+{% block content %}
+<h2 class="section-title mb-3">Find Recommended PGs</h2>
+<div class="card p-3 mb-4">
+  <form method="POST" class="row g-3 align-items-end">
+    {% csrf_token %}
+    <div class="col-md-4">
+      <label class="form-label">City</label>
+      <input type="text" name="city" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Budget (Max Rent)</label>
+      <input type="number" name="budget" class="form-control" required>
+    </div>
+    <div class="col-12">
+      <label class="form-label">Facilities</label>
+      <div class="d-flex flex-wrap gap-3">
+        <div class="form-check"><input class="form-check-input" type="checkbox" name="facilities" value="AC" id="f1"><label class="form-check-label" for="f1">AC</label></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" name="facilities" value="Fridge" id="f2"><label class="form-check-label" for="f2">Fridge</label></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" name="facilities" value="Washing Machine" id="f3"><label class="form-check-label" for="f3">Washing Machine</label></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" name="facilities" value="Tv" id="f4"><label class="form-check-label" for="f4">TV</label></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" name="facilities" value="Power Backup" id="f5"><label class="form-check-label" for="f5">Power Backup</label></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" name="facilities" value="Security" id="f6"><label class="form-check-label" for="f6">Security</label></div>
+      </div>
+    </div>
+    <div class="col-md-4 d-grid">
+      <button type="submit" class="btn btn-primary">Get Recommendations</button>
+    </div>
+  </form>
+</div>
+
+<div class="row g-4">
+{% if recommended_pgs %}
+  {% for pg in recommended_pgs %}
+  <div class="col-12 col-sm-6 col-lg-4">
+    <a href="{% url 'pg_detail' pg.pk %}" class="text-decoration-none">
+      <div class="card pg-card h-100">
+        {% if pg.image_file %}
+          <img src="{{ pg.image_file.url }}" class="thumb" alt="{{ pg.title }}">
+        {% elif pg.image_url %}
+          <img src="{{ pg.image_url }}" class="thumb" alt="{{ pg.title }}">
+        {% else %}
+          <img src="https://via.placeholder.co/600x400?text=PG" class="thumb" alt="{{ pg.title }}">
+        {% endif %}
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <h5 class="card-title mb-0">{{ pg.title }}</h5>
+            <span class="badge">{{ pg.city }}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <span class="price">₹{{ pg.min_rent }}</span>
+            <small class="muted">per month</small>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="col-12"><div class="alert alert-info">No PGs match your criteria.</div></div>
+{% endif %}
+</div>
+{% endblock %}

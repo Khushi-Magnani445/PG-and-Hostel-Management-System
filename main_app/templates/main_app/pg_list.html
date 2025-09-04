@@ -1,0 +1,50 @@
+{% extends 'main_app/base.html' %}
+{% block title %}PG Listings | PG Manager{% endblock %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h2 class="section-title">Available PG Listings</h2>
+  <small class="muted">{{ pgs|length }} results</small>
+  </div>
+<form method="get" action="" class="search-bar mb-4">
+  <div class="row g-2">
+    <div class="col-12 col-md-9">
+      <input type="text" name="keyword" value="{{ request.GET.keyword }}" placeholder="Search by keyword" class="form-control" />
+    </div>
+    <div class="col-12 col-md-3 d-grid">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+  </div>
+  </form>
+
+<div class="row g-4">
+  {% for pg in pgs %}
+  <div class="col-12 col-sm-6 col-lg-4">
+    <a href="{% url 'pg_detail' pg.pk %}" class="text-decoration-none">
+      <div class="card pg-card h-100">
+        {% if pg.image_file %}
+          <img src="{{ pg.image_file.url }}" class="thumb" alt="{{ pg.title }}" />
+        {% elif pg.image_url %}
+          <img src="{{ pg.image_url }}" class="thumb" alt="{{ pg.title }}" />
+        {% else %}
+          <img src="https://via.placeholder.co/600x400?text=PG" class="thumb" alt="{{ pg.title }}" />
+        {% endif %}
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <h5 class="card-title mb-0">{{ pg.title }}</h5>
+            <span class="badge">{{ pg.city }}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <span class="price">₹{{ pg.min_rent }}</span>
+            <small class="muted">per month</small>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="alert alert-warning">No PGs found matching your search.</div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

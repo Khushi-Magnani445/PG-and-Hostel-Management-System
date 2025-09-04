@@ -1,0 +1,64 @@
+{% extends 'main_app/base.html' %}
+{% block title %}Home | PG Manager{% endblock %}
+{% block nav_home %}active{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="row align-items-center g-4">
+    <div class="col-lg-7">
+      <h1 class="display-5 title">Find your perfect PG</h1>
+      <p class="lead text-secondary">Search and compare stays across cities, amenities, and budget.</p>
+    </div>
+    <div class="col-lg-5">
+      <form method="get" class="search-bar needs-validation" novalidate>
+        <div class="row g-2 align-items-center">
+          <div class="col-12 col-md-6">
+            <input type="text" class="form-control" name="keyword" value="{{ request.GET.keyword }}" placeholder="Search by name or city" />
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="d-flex align-items-center gap-2">
+              <input type="range" min="2000" max="30000" step="500" id="priceRange" name="max_price" class="form-range" value="{{ request.GET.max_price|default:15000 }}" />
+              <span id="priceOut" class="small muted"></span>
+            </div>
+          </div>
+          <div class="col-12 col-md-2 text-end">
+            <button class="btn btn-primary w-100" type="submit">Search</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="pt-2">
+  <div class="row g-4">
+    {% for pg in pgs %}
+      <div class="col-12 col-sm-6 col-lg-4">
+        <a href="{% url 'pg_detail' pg.pk %}" class="text-decoration-none">
+          <div class="card pg-card h-100">
+            {% if pg.image_file %}
+              <img src="{{ pg.image_file.url }}" class="thumb" alt="{% firstof pg.title pg.name 'PG' %}" />
+            {% else %}
+              <img src="https://via.placeholder.co/600x400?text=PG" class="thumb" alt="{% firstof pg.title pg.name 'PG' %}" />
+            {% endif %}
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="card-title mb-0">{% firstof pg.title pg.name %}</h5>
+                <span class="badge">{% firstof pg.city pg.location %}</span>
+              </div>
+              <p class="pg-meta mb-2">{% firstof pg.address '' %}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="price">₹{% firstof pg.min_rent pg.rent 0 %}</span>
+                <span class="small muted">per month</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="alert alert-warning">No PGs found.</div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
